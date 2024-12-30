@@ -1,5 +1,12 @@
 // import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  Platform,
+} from "react-native";
 import { app, database, storage } from "./firebaseConfig.js";
 import { firebaseConfig } from "./firebaseConfig.js";
 // import MapView from "react-native-maps";
@@ -10,20 +17,35 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { unsubscribe } from "diagnostics_channel";
+// import { unsubscribe } from "diagnostics_channel";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  initializeAuth,
+  getReactNativePersistance,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 
-const auth = getAuth(app);
+/*
+Næste video om login:
+https://go.screenpal.com/watch/c063obVEr0k
+*/
+
+let auth = getAuth(app);
+if (Platform.OS === "web") {
+  auth = getAuth(app);
+} else {
+  // Gemmer auth i devicen - virker dog ikke
+  auth = initializeAuth(app, {persistence: getReactNativePersistance(ReactNativeAsyncStorage)})
+}
+
+
+
 
 export default function App() {
-  // DO NOT PUSH THIS!
-  const API_KEY = firebaseConfig.apiKey;
-  const url =
-    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
-  const urlSignUp =
-    "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
-
   // Very silly to hve stuff like this hardcoded here...
   const [enteredEmail, setEnteredEmail] = useState("totallyreal3@email.com");
   const [enteredPassword, setEnteredPassword] = useState("123numanumayay");
@@ -76,15 +98,14 @@ export default function App() {
 
   async function signup() {
     try {
-      const response = await axios.post(urlSignUp + API_KEY, {
-        email: enteredEmail,
-        password: enteredPassword,
-        returnSecureToken: true,
-      });
-      alert("Oprettet " + response.data.idToken);
-    } catch (error) {
-      alert("ikke oprettet " + error.response.data.error.errors[0].message);
-    }
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        enteredEmail,
+        enteredPassword
+      );
+      console.log("User created: " + userCredential.user.uid);
+    } catch (error) {}
+
   }
 
   return (
@@ -116,13 +137,17 @@ export default function App() {
           <Button title="Signup" onPress={signup} />
         </>
       )}
-      <TextInput
-        onChangeText={(newText) => setenteredText(newText)}
-        value={enteredText}
-      />
+      {userId && (
+        <>
+          <TextInput
+            onChangeText={(newText) => setenteredText(newText)}
+            value={enteredText}
+          />
 
-      <Button title="Add new Document" onPress={addDocument} />
-      <Button title="Sign Out" onPress={sign_out} />
+          <Button title="Add new Document" onPress={addDocument} />
+          <Button title="Sign Out" onPress={sign_out} />
+        </>
+      )}
     </View>
   );
 }
