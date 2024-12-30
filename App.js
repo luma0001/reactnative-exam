@@ -21,24 +21,27 @@ import {
   signOut,
 } from "firebase/auth";
 // import { unsubscribe } from "diagnostics_channel";
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  initializeAuth,
-  getReactNativePersistance,
-  setPersistence,
-  browserLocalPersistence,
-} from "firebase/auth";
+// import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+// import {
+//   initializeAuth,
+//   getReactNativePersistence,
+//   setPersistence,
+//   browserLocalPersistence,
+// } from "firebase/auth";
 
 let auth = getAuth(app);
-if (Platform.OS === "web") {
-  auth = getAuth(app);
-} else {
+
+/*
+
+This is giving some errors - if I can make it work, good.
+
+if (Platform.OS !== "web") {
   // Gemmer auth i devicen - virker dog ikke
-  auth = initializeAuth(app, {persistence: getReactNativePersistance(ReactNativeAsyncStorage)})
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  });
 }
-
-
-
+*/
 
 export default function App() {
   // Very silly to hve stuff like this hardcoded here...
@@ -100,7 +103,6 @@ export default function App() {
       );
       console.log("User created: " + userCredential.user.uid);
     } catch (error) {}
-
   }
 
   return (
