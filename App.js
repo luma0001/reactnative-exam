@@ -29,11 +29,6 @@ import {
   browserLocalPersistence,
 } from "firebase/auth";
 
-/*
-Næste video om login:
-https://go.screenpal.com/watch/c063obVEr0k
-*/
-
 let auth = getAuth(app);
 if (Platform.OS === "web") {
   auth = getAuth(app);
