@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { app, database, storage } from "./firebaseConfig.js";
 import { firebaseConfig } from "./firebaseConfig.js";
-// import MapView from "react-native-maps";
+import MapView from "react-native-maps";
 import { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
 // Login firebase auth
@@ -28,6 +28,11 @@ import {
 //   setPersistence,
 //   browserLocalPersistence,
 // } from "firebase/auth";
+
+
+
+
+
 
 let auth = getAuth(app);
 
@@ -106,9 +111,6 @@ export default function App() {
   }
 
   return (
-    // <View style={styles.container}>
-    //   <MapView style={styles.map}></MapView>
-    // </View>
     <View style={styles.container}>
       {!userId && (
         <>
@@ -136,12 +138,15 @@ export default function App() {
       )}
       {userId && (
         <>
-          <TextInput
+          {/* <TextInput
             onChangeText={(newText) => setenteredText(newText)}
             value={enteredText}
           />
 
-          <Button title="Add new Document" onPress={addDocument} />
+   
+          <Button title="Add new Document" onPress={addDocument} /> */}
+          <Text>SEE THIS!!!!!</Text>
+          <MapView style={styles.map}></MapView>
           <Button title="Sign Out" onPress={sign_out} />
         </>
       )}
@@ -157,6 +162,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: "100%",
+    height: "90%",
   },
 });
