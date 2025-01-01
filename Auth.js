@@ -5,12 +5,13 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
+import { userLogIn } from "./firebaseConfig";
 
 const auth = getAuth();
 
 export function LogIn({ onLogin }) {
-  const [enteredEmail, setEnteredEmail] = useState("HenryTestman@email.com");
-  const [enteredPassword, setEnteredPassword] = useState("2012OpaGangmanStyle");
+  const [enteredEmail, setEnteredEmail] = useState(userLogIn.email);
+  const [enteredPassword, setEnteredPassword] = useState(userLogIn.password);
 
   async function login() {
     try {
