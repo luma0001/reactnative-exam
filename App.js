@@ -1,4 +1,4 @@
-// import { StatusBar } from "expo-status-bar";
+// ---- Import React og Expo Libraties -----
 import {
   StyleSheet,
   Text,
@@ -7,11 +7,10 @@ import {
   Button,
   Platform,
 } from "react-native";
-import { app, database, storage } from "./firebaseConfig.js";
-import MapView from "react-native-maps";
 import { useState, useEffect } from "react";
+// ---- Import Firebase -----
+import { app, database, storage } from "./firebaseConfig.js";
 import { addDoc, collection } from "firebase/firestore";
-// Login firebase auth
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -19,7 +18,6 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-// import { unsubscribe } from "diagnostics_channel";
 // import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 // import {
 //   initializeAuth,
@@ -27,10 +25,18 @@ import {
 //   setPersistence,
 //   browserLocalPersistence,
 // } from "firebase/auth";
-
+// ---- Import MapView -----
+import MapView, { Marker } from "react-native-maps";
 // ---- Import config -----
 import { firebaseConfig } from "./firebaseConfig.js";
 import { userLogIn } from "./firebaseConfig.js";
+
+/*
+  ==================================================================================
+                                  Set Auth
+  ==================================================================================
+  */
+//#region Auth
 
 let auth = getAuth(app);
 
@@ -45,6 +51,8 @@ if (Platform.OS !== "web") {
   });
 }
 */
+
+//#endregion
 
 export default function App() {
   // Very silly to hve stuff like this hardcoded here...
@@ -81,6 +89,57 @@ export default function App() {
     }
   }
 
+  //#region Map
+  /*
+  ==================================================================================
+                                  Map View
+  ==================================================================================
+  */
+  const [markers, setMarkers] = useState([]);
+  const [region, setRegion] = useState({
+    latitude: 0, // Default latitude
+    longitude: 12, // Default longitude
+    latitudeDelta: 10, // Default zoom level
+    longitudeDelta: 10, // Default zoom level
+  });
+
+  // --------------------- FETCH MARKER ----------------------------------------------
+
+  // Her bruge vi en useEffect til kun at kaled fetchRegions når siden loades første gang
+  useEffect(() => {
+    fetchRegions();
+  }, []);
+
+  // Fetch all markers from Firestore
+  async function fetchRegions() {
+    alert(JSON.stringify, markers, 4, null);
+    try {
+      const regionData = await getDocs(collection(database, "marker"));
+      const allMarkers = regionData.docs.map((doc) => ({
+        id: doc.id, // Firebase-generated ID
+        ...doc.data().marker, // Marker data
+      }));
+
+      // Set the markers state to the fetched data
+      setMarkers(allMarkers); // Set regions to markers
+    } catch (error) {
+      console.log("Error fetching regions:", error);
+    }
+  }
+
+  function addMarker() {
+    alert("Marker!");
+  }
+
+  //#endregion
+
+  /*
+  ==================================================================================
+                                  LOG IN
+  ==================================================================================
+  */
+  //#region Login
+
   // VI SKAL benytte CLIENT måden hvor man automatisk for log-in statet med...
   async function login() {
     try {
@@ -107,6 +166,8 @@ export default function App() {
       console.log("User created: " + userCredential.user.uid);
     } catch (error) {}
   }
+
+  //#endregion
 
   return (
     <View style={styles.container}>
@@ -143,8 +204,17 @@ export default function App() {
 
    
           <Button title="Add new Document" onPress={addDocument} /> */}
-          <Text>SEE THIS!!!!!</Text>
-          <MapView style={styles.map}></MapView>
+          <Text>UPDATED</Text>
+          <MapView style={styles.map} reion={region} onLongPress={addMarker}>
+            {markers.map((marker) => (
+              <Marker
+                coordinate={marker.coordinate}
+                key={marker.id} // Ensure unique key
+                title={marker.title}
+                onPress={() => alert("Pressed " + marker.title)} // Show alert on marker press
+              />
+            ))}
+          </MapView>
           <Button title="Sign Out" onPress={sign_out} />
         </>
       )}
