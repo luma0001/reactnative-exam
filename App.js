@@ -8,7 +8,6 @@ import {
   Platform,
 } from "react-native";
 import { app, database, storage } from "./firebaseConfig.js";
-import { firebaseConfig } from "./firebaseConfig.js";
 import MapView from "react-native-maps";
 import { useState, useEffect } from "react";
 import { addDoc, collection } from "firebase/firestore";
@@ -29,10 +28,9 @@ import {
 //   browserLocalPersistence,
 // } from "firebase/auth";
 
-
-
-
-
+// ---- Import config -----
+import { firebaseConfig } from "./firebaseConfig.js";
+import { userLogIn } from "./firebaseConfig.js";
 
 let auth = getAuth(app);
 
@@ -50,8 +48,8 @@ if (Platform.OS !== "web") {
 
 export default function App() {
   // Very silly to hve stuff like this hardcoded here...
-  const [enteredEmail, setEnteredEmail] = useState("totallyreal3@email.com");
-  const [enteredPassword, setEnteredPassword] = useState("123numanumayay");
+  const [enteredEmail, setEnteredEmail] = useState(userLogIn.email);
+  const [enteredPassword, setEnteredPassword] = useState(userLogIn.password);
   const [userId, setUserId] = useState(null);
   const [enteredText, setenteredText] = useState("type here");
 
