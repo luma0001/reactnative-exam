@@ -30,6 +30,9 @@ import MapView, { Marker } from "react-native-maps";
 // ---- Import config -----
 import { firebaseConfig } from "./firebaseConfig.js";
 import { userLogIn } from "./firebaseConfig.js";
+// ---- Import navigation -----
+import { createStackNavigator } from "react-navigation-stack";
+import { createAppContainer } from "react-navigation";
 
 /*
   ==================================================================================
@@ -51,8 +54,108 @@ if (Platform.OS !== "web") {
   });
 }
 */
-
 //#endregion
+
+//#region Stack Navigation
+/*
+  ==================================================================================
+                                  Stack Navigation
+  ==================================================================================
+*/
+
+const Container = createAppContainer(AppNavigation);
+
+const AppNavigation = createStackNavigator({
+  Event: EventScreen,
+  Calander: CalanderScreen,
+  DatePicker: DatePickerScreen,
+});
+
+// export default createAppContainer(AppNavigation)
+
+//endregion
+
+//#region Tasks
+/*
+  ==================================================================================
+                                  Task View
+  ==================================================================================
+*/
+
+function EventScreen(navigation) {
+  const [title, setTitle] = useState("");
+  const [details, setDetails] = useState("");
+
+  return (
+    <>
+      <View>
+        <Text>Task</Text>
+        <TextInput placeholder="Task" onChange={setTitle} value={title} />
+        <Text>Details</Text>
+        <TextInput
+          placeholder="Details"
+          onChange={setDetails}
+          value={details}
+        />
+        <Button title="Go to X" />
+        <Button title="Go to X" />
+      </View>
+    </>
+  );
+}
+//endregion
+
+//#region Calender
+/*
+  ==================================================================================
+                                  Calender View
+  ==================================================================================
+*/
+
+function CalanderScreen(navigation) {
+  const [date, setDate] = useState("");
+
+  return (
+    <>
+      <View>
+        <Text>HERE IS A LIST OF TASKS</Text>
+        <Button title="Go to X" />
+        <Button title="Go to X" />
+      </View>
+    </>
+  );
+}
+//#endregion
+
+//#region Date Picker
+/*
+  ==================================================================================
+                                Date Picker
+  ==================================================================================
+*/
+
+function DatePickerScreen(navigation) {
+  const [date, setDate] = useState("");
+
+  return (
+    <>
+      <View>
+        <Text>Task</Text>
+        <TextInput placeholder="Task" onChange={setDate} value={date} />
+        <Button title="Go to X" />
+        <Button title="Go to X" />
+      </View>
+    </>
+  );
+}
+//#endregion
+
+//#region App
+/*
+  ==================================================================================
+                                  APP()
+  ==================================================================================
+*/
 
 export default function App() {
   // Very silly to hve stuff like this hardcoded here...
@@ -88,6 +191,7 @@ export default function App() {
       console.log("error addDocument " + error);
     }
   }
+  //#endregion
 
   //#region Map
   /*
@@ -299,7 +403,7 @@ export default function App() {
 
    
           <Button title="Add new Document" onPress={addDocument} /> */}
-          <Text>UPDATED</Text>
+          {/* <Text>UPDATED</Text>
           <MapView style={styles.map} reion={region} onLongPress={addMarker}>
             {markers.map((marker) => (
               <Marker
@@ -309,7 +413,9 @@ export default function App() {
                 onPress={() => alert("Pressed " + marker.title)} // Show alert on marker press
               />
             ))}
-          </MapView>
+          </MapView> */}
+          {/* <AppNavigation /> */}
+          <Container />
           <Button title="Sign Out" onPress={sign_out} />
         </>
       )}
