@@ -7,10 +7,10 @@ import {
   Button,
   Platform,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 // ---- Import Firebase -----
 import { app, database, storage } from "./firebaseConfig.js";
-import { addDoc, collection } from "firebase/firestore";
+import { getDocs, addDoc, collection } from "firebase/firestore";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -95,6 +95,7 @@ export default function App() {
                                   Map View
   ==================================================================================
   */
+  // --------------------- MAP HOOKS -----------------------------------------------
   const [markers, setMarkers] = useState([]);
   const [region, setRegion] = useState({
     latitude: 0, // Default latitude
@@ -102,6 +103,8 @@ export default function App() {
     latitudeDelta: 10, // Default zoom level
     longitudeDelta: 10, // Default zoom level
   });
+  const mapView = useRef(null); // Ref for MapView instance
+  const locationSubscription = useRef(null); // To track the location subscription
 
   // --------------------- FETCH MARKER ----------------------------------------------
 
@@ -114,7 +117,7 @@ export default function App() {
   async function fetchRegions() {
     alert(JSON.stringify, markers, 4, null);
     try {
-      const regionData = await getDocs(collection(database, "marker"));
+      const regionData = await getDocs(collection(database, userId));
       const allMarkers = regionData.docs.map((doc) => ({
         id: doc.id, // Firebase-generated ID
         ...doc.data().marker, // Marker data
@@ -127,9 +130,101 @@ export default function App() {
     }
   }
 
-  function addMarker() {
-    alert("Marker!");
+  // --------------------- ADD MARKER ----------------------------------------------
+
+  // Function to add a marker on long press
+  function addMarker(data) {
+    const { latitude, longitude } = data.nativeEvent.coordinate; // Correct destructuring
+    const newMarker = {
+      coordinate: { latitude, longitude },
+      title: "New App",
+    };
+    // setMarkers((prevMarkers) => [...prevMarkers, newMarker]); // Use previous state to add the marker
+
+    // Upload the current region to firebase
+    uploadRegion(newMarker); // Use the current region state directly
   }
+
+  // --------------------- UPLOAD MARKER ----------------------------------------------
+
+  // Modify uploadRegion to accept the region as a parameter
+  async function uploadRegion(currentMarker) {
+    console.log(currentMarker);
+    try {
+      if (
+        !currentMarker ||
+        !currentMarker.coordinate.latitude ||
+        !currentMarker.coordinate.longitude
+      ) {
+        alert("Region data is invalid.");
+        return;
+      }
+
+      alert("New region added ", JSON.stringify(currentMarker));
+
+      // Upload region to Firestore
+      await addDoc(collection(database, userId), { marker: currentMarker });
+
+      // Fetches alle th markers from firestore
+      fetchRegions();
+      alert("Region uploaded successfully!");
+    } catch (err) {
+      console.error("Error uploading region:", err.message || err);
+      alert("Error uploading region: " + (err.message || err));
+    }
+  }
+
+  // --------------------- UPDATE REGION/ LOCATION  ----------------------------------------------
+
+  // UseEffect for location updates
+  useEffect(() => {
+    async function startListening() {
+      // Request permission to access location
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("Location is not available");
+        return;
+      }
+
+      // Start watching the position
+      locationSubscription.current = await Location.watchPositionAsync(
+        {
+          distanceInterval: 100, // Update every 100 meters
+          accuracy: Location.Accuracy.High, // Use high accuracy for location
+        },
+        (location) => {
+          if (!location || !location.coords) {
+            console.log("Location is not available");
+            return; // Handle location not available case
+          }
+
+          const newRegion = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: region.latitudeDelta, // Keep zoom level constant
+            longitudeDelta: region.longitudeDelta, // Keep zoom level constant
+          };
+
+          // Update region state with new location
+          setRegion(newRegion);
+          // Animate map to new region
+          if (mapView.current) {
+            mapView.current.animateToRegion(newRegion); // Animate to new location
+          }
+        }
+      );
+    }
+
+    // Start location tracking
+    startListening();
+
+    // Cleanup function to remove the location listener when the component unmounts
+    return () => {
+      if (locationSubscription.current) {
+        locationSubscription.current.remove();
+      }
+    };
+  }, []); // Re-run effect if zoom level changes
 
   //#endregion
 
