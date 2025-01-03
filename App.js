@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MapView from "react-native-maps";
 
 //#region Default Screen
 /*
@@ -109,6 +110,7 @@ function MapScreen({ navigation }) {
   return (
     <View style={styles.screenContainer}>
       <Text>HERE IS A MAP</Text>
+      <MapView style={styles.map}></MapView>
       <Button
         title="Go to Default"
         onPress={() => navigation.navigate("Default")}
@@ -178,5 +180,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     margin: 20,
+  },
+  map: {
+    height: "80%",
+    width: "100%",
   },
 });
