@@ -3,14 +3,20 @@ import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-// Default Screen
+//#region Default Screen
+/*
+  ==================================================================================
+                                Default Screen
+  ==================================================================================
+*/
+
 function DefaultScreen({ navigation }) {
   const [date, setDate] = useState("");
 
-  useEffect(() => {
-    console.log("DefaultScreen rendered");
-    alert("Default Screen here");
-  }, []); // Alert only when the component is mounted
+  // useEffect(() => {
+  //   console.log("DefaultScreen rendered");
+  //   alert("Default Screen here");
+  // }, []); // Alert only when the component is mounted
 
   return (
     <View style={styles.screenContainer}>
@@ -45,8 +51,15 @@ function DefaultScreen({ navigation }) {
     </View>
   );
 }
+//#endregion
 
-// Date Picker Screen
+//#region Date Picker
+/*
+  ==================================================================================
+                                Date Picker
+  ==================================================================================
+*/
+
 function DatePickerScreen({ navigation }) {
   return (
     <View style={styles.screenContainer}>
@@ -59,6 +72,77 @@ function DatePickerScreen({ navigation }) {
     </View>
   );
 }
+//#endregion
+
+//#region List
+/*
+  ==================================================================================
+                                  List
+  ==================================================================================
+*/
+
+function ListScreen({ navigation }) {
+  const [date, setDate] = useState("");
+
+  return (
+    <View style={styles.screenContainer}>
+      <Text>HERE IS A LIST OF TASKS</Text>
+      <Button
+        title="Go to Default"
+        onPress={() => navigation.navigate("Default")}
+      />
+    </View>
+  );
+}
+//#endregion
+
+//#region MOCKMAP
+/*
+  ==================================================================================
+                                  Mock Map
+  ==================================================================================
+*/
+
+function MapScreen({ navigation }) {
+  const [date, setDate] = useState("");
+
+  return (
+    <View style={styles.screenContainer}>
+      <Text>HERE IS A MAP</Text>
+      <Button
+        title="Go to Default"
+        onPress={() => navigation.navigate("Default")}
+      />
+    </View>
+  );
+}
+//#endregion
+
+//#region Tasks
+/*
+  ==================================================================================
+                                  Task View
+  ==================================================================================
+*/
+
+function EventScreen({ navigation }) {
+  const [title, setTitle] = useState("");
+  const [details, setDetails] = useState("");
+
+  return (
+    <View style={styles.screenContainer}>
+      <Text>Task</Text>
+      <TextInput placeholder="Task" onChange={setTitle} value={title} />
+      <Text>Details</Text>
+      <TextInput placeholder="Details" onChange={setDetails} value={details} />
+      <Button
+        title="Go to Default"
+        onPress={() => navigation.navigate("Default")}
+      />
+    </View>
+  );
+}
+//endregion
 
 // Stack Navigation Setup
 const Stack = createNativeStackNavigator();
@@ -72,6 +156,10 @@ export default function App() {
       <Stack.Navigator initialRouteName="Default">
         <Stack.Screen name="Default" component={DefaultScreen} />
         <Stack.Screen name="Date" component={DatePickerScreen} />
+        <Stack.Screen name="List" component={ListScreen} />
+        <Stack.Screen name="Map" component={MapScreen} />
+        <Stack.Screen name="Event" component={EventScreen} />
+
         {/* You can add more screens like List, Map, etc. */}
       </Stack.Navigator>
     </NavigationContainer>
