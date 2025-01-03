@@ -1,0 +1,24 @@
+#0 - Make a navigation window with the following tabs:
+- SetDate
+- ViewList
+- ViewMap
+- ? Set time ? (dev only)
+
+#1 - List view: 
+- Load all the elements (matching that DATE)
+- each list needs to be clickable and open THE TASK MODAL
+
+
+#2 Task MODAL
+- Title
+- time
+- Description (optinal)
+- Locatoin... type manually 
+- Location BUTTON ... OPEN THE MAP VIEW AND SET IT
+
+# View MAP
+- Loads all the Markers belonging to that DATE
+
+#4 SET DATE
+- A calender
+-- Selecting a date set the date for MAP and LIST 
