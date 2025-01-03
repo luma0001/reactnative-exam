@@ -31,8 +31,8 @@ import MapView, { Marker } from "react-native-maps";
 import { firebaseConfig } from "./firebaseConfig.js";
 import { userLogIn } from "./firebaseConfig.js";
 // ---- Import navigation -----
-import { createStackNavigator } from "react-navigation-stack";
-import { createAppContainer } from "react-navigation";
+import { NavigationContaier } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 /*
   ==================================================================================
@@ -56,24 +56,54 @@ if (Platform.OS !== "web") {
 */
 //#endregion
 
-//#region Stack Navigation
+//#region Default Screen
 /*
   ==================================================================================
-                                  Stack Navigation
+                                Default Screen
   ==================================================================================
 */
 
-const Container = createAppContainer(AppNavigation);
+function DefaultScreen({ navigation }) {
+  const [date, setDate] = useState("");
 
-const AppNavigation = createStackNavigator({
-  Event: EventScreen,
-  Calander: CalanderScreen,
-  DatePicker: DatePickerScreen,
-});
+  return (
+    <>
+      <View>
+        <Text>Task</Text>
+        <TextInput placeholder="Task" onChange={setDate} value={date} />
+        <Button title="Go to Date" onPress={navigation.navigate("Date")} />
+        <Button title="Go to List" onPress={navigation.navigate("List")} />
+        <Button title="Go to Map" onPress={navigation.navigate("Map")} />
+        <Button title="Go to Event" onPress={navigation.navigate("Event")} />
+      </View>
+    </>
+  );
+}
+//#endregion
 
-// export default createAppContainer(AppNavigation)
+//#region MOCKMAP
+/*
+  ==================================================================================
+                                  Mock Map
+  ==================================================================================
+*/
 
-//endregion
+function MapScreen({ navigation }) {
+  const [date, setDate] = useState("");
+
+  return (
+    <>
+      <View>
+        <Text>HERE IS A MAP</Text>
+        <Button
+          title="Go to Default"
+          onPress={() => navigation.navigate("Default")}
+        />
+      </View>
+    </>
+  );
+}
+//#endregion
 
 //#region Tasks
 /*
@@ -97,30 +127,34 @@ function EventScreen(navigation) {
           onChange={setDetails}
           value={details}
         />
-        <Button title="Go to X" />
-        <Button title="Go to X" />
+        <Button
+          title="Go to Default"
+          onPress={() => navigation.navigate("Default")}
+        />
       </View>
     </>
   );
 }
 //endregion
 
-//#region Calender
+//#region List
 /*
   ==================================================================================
-                                  Calender View
+                                  List
   ==================================================================================
 */
 
-function CalanderScreen(navigation) {
+function ListScreen({ navigation }) {
   const [date, setDate] = useState("");
 
   return (
     <>
       <View>
         <Text>HERE IS A LIST OF TASKS</Text>
-        <Button title="Go to X" />
-        <Button title="Go to X" />
+        <Button
+          title="Go to Default"
+          onPress={() => navigation.navigate("Default")}
+        />
       </View>
     </>
   );
@@ -134,7 +168,7 @@ function CalanderScreen(navigation) {
   ==================================================================================
 */
 
-function DatePickerScreen(navigation) {
+function DatePickerScreen({ navigation }) {
   const [date, setDate] = useState("");
 
   return (
@@ -142,15 +176,17 @@ function DatePickerScreen(navigation) {
       <View>
         <Text>Task</Text>
         <TextInput placeholder="Task" onChange={setDate} value={date} />
-        <Button title="Go to X" />
-        <Button title="Go to X" />
+        <Button
+          title="Go to Default"
+          onPress={navigation.navigate("Default")}
+        />
       </View>
     </>
   );
 }
 //#endregion
 
-//#region App
+//#region # App #
 /*
   ==================================================================================
                                   APP()
@@ -368,6 +404,15 @@ export default function App() {
 
   //#endregion
 
+  //#region Stack Navigation
+  /*
+  ==================================================================================
+                                  Stack Navigation
+  ==================================================================================
+*/
+  const Stack = createNativeStackNavigator();
+  //endregion
+
   return (
     <View style={styles.container}>
       {!userId && (
@@ -400,8 +445,6 @@ export default function App() {
             onChangeText={(newText) => setenteredText(newText)}
             value={enteredText}
           />
-
-   
           <Button title="Add new Document" onPress={addDocument} /> */}
           {/* <Text>UPDATED</Text>
           <MapView style={styles.map} reion={region} onLongPress={addMarker}>
@@ -414,8 +457,14 @@ export default function App() {
               />
             ))}
           </MapView> */}
-          {/* <AppNavigation /> */}
-          <Container />
+          <NavigationContaier>
+            <Stack.Navigatior initalRouteName="Default" />
+            <Stack.Screen name="Default" component={DefaultScreen} />
+            <Stack.Screen name="Date" component={DatePickerScreen} />
+            <Stack.Screen name="List" component={ListScreen} />
+            <Stack.Screen name="Map" component={MapScreen} />
+            <Stack Screen name="Event" component={EventScreen} />
+          </NavigationContaier>
           <Button title="Sign Out" onPress={sign_out} />
         </>
       )}
