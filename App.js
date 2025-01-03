@@ -31,7 +31,9 @@ import MapView, { Marker } from "react-native-maps";
 import { firebaseConfig } from "./firebaseConfig.js";
 import { userLogIn } from "./firebaseConfig.js";
 // ---- Import navigation -----
-import { NavigationContaier } from "@react-navigation/native";
+// import { NavigationContaier } from "@react-navigation/native";
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 /*
@@ -63,18 +65,27 @@ if (Platform.OS !== "web") {
   ==================================================================================
 */
 
-function DefaultScreen({ navigation }) {
+function DefaultScreen(navigation, route) {
   const [date, setDate] = useState("");
-
+  alert("Default Screen here");
   return (
     <>
       <View>
         <Text>Task</Text>
         <TextInput placeholder="Task" onChange={setDate} value={date} />
-        <Button title="Go to Date" onPress={navigation.navigate("Date")} />
-        <Button title="Go to List" onPress={navigation.navigate("List")} />
-        <Button title="Go to Map" onPress={navigation.navigate("Map")} />
-        <Button title="Go to Event" onPress={navigation.navigate("Event")} />
+        <Button
+          title="Go to Date"
+          onPress={() => navigation.navigate("Date")}
+        />
+        <Button
+          title="Go to List"
+          onPress={() => navigation.navigate("List")}
+        />
+        <Button title="Go to Map" onPress={() => navigation.navigate("Map")} />
+        <Button
+          title="Go to Event"
+          onPress={() => navigation.navigate("Event")}
+        />
       </View>
     </>
   );
@@ -112,7 +123,7 @@ function MapScreen({ navigation }) {
   ==================================================================================
 */
 
-function EventScreen(navigation) {
+function EventScreen({ navigation }) {
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
 
@@ -211,8 +222,10 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth_, (currentUser) => {
       if (currentUser) {
         setUserId(currentUser.uid);
+        console.log("User ID:", currentUser.uid);
       } else {
         setUserId(null);
+        console.log("No user logged in");
       }
     });
     return () => unsubscribe();
@@ -415,7 +428,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {!userId && (
+      {!userId ? (
         <>
           <Text>Login</Text>
           <TextInput
@@ -438,8 +451,7 @@ export default function App() {
           />
           <Button title="Signup" onPress={signup} />
         </>
-      )}
-      {userId && (
+      ) : (
         <>
           {/* <TextInput
             onChangeText={(newText) => setenteredText(newText)}
@@ -457,15 +469,16 @@ export default function App() {
               />
             ))}
           </MapView> */}
-          <NavigationContaier>
-            <Stack.Navigatior initalRouteName="Default" />
-            <Stack.Screen name="Default" component={DefaultScreen} />
-            <Stack.Screen name="Date" component={DatePickerScreen} />
-            <Stack.Screen name="List" component={ListScreen} />
-            <Stack.Screen name="Map" component={MapScreen} />
-            <Stack Screen name="Event" component={EventScreen} />
-          </NavigationContaier>
-          <Button title="Sign Out" onPress={sign_out} />
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Default">
+              <Stack.Screen name="Default" component={DefaultScreen} />
+              <Stack.Screen name="Date" component={DatePickerScreen} />
+              <Stack.Screen name="List" component={ListScreen} />
+              <Stack.Screen name="Map" component={MapScreen} />
+              <Stack.Screen name="Event" component={EventScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+          {/* <Button title="Sign Out" onPress={sign_out} /> */}
         </>
       )}
     </View>
