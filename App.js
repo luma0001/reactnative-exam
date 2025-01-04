@@ -51,13 +51,6 @@ function DefaultScreen({ navigation }) {
           navigation.navigate("Map");
         }}
       />
-      <Button
-        title="Go to Event"
-        onPress={() => {
-          console.log("Navigating to Event");
-          navigation.navigate("Event");
-        }}
-      />
     </View>
   );
 }
@@ -310,6 +303,7 @@ export default function App() {
         <Stack.Screen name="Date" component={DatePickerScreen} />
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
+        <Stack.Screen name="Event" component={EventScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
