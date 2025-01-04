@@ -118,9 +118,21 @@ function ListScreen({ navigation }) {
     </View>
   );
 
+  function handleNewEventPressed() {
+    alert("You wanna make a new event!");
+
+    // open the EventScreen with a <CREATE BUTTON>
+    // Instead of a <DELETE/UPDATE...>
+    // EventScreen should be TEXT until you CREATE or DELTE - Then it's text input!
+    // ... then we ddo CRUD
+    // Update LOCATION - the last thing OK!
+    // Then we can contemplate having a calender...
+  }
+
   return (
     <View style={styles.screenContainer}>
-      <Text>HERE IS A LIST OF TASKS</Text>
+      <Text>Your Day:</Text>
+      {/* <Button title="New Event" onPress={handleNewEventPressed()}></Button> */}
       <FlatList
         data={data}
         renderItem={renderEvent}
@@ -143,23 +155,98 @@ function ListScreen({ navigation }) {
 */
 
 function EventScreen({ navigation, route }) {
+  const [viewOnly, setViewOnly] = useState(true); // Default to view mode
   const [title, setTitle] = useState("");
-  const [details, setDetails] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [description, setDescription] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+
   const event = route.params.itemObject;
+
+  // Update form fields with event details when in view mode
+  useEffect(() => {
+    if (!viewOnly) {
+      setTitle(event.title);
+      setDate(event.date);
+      setTime(event.time);
+      setDescription(event.description);
+      setLatitude(event.latitude);
+      setLongitude(event.longitude);
+    }
+  }, [viewOnly, event]);
+
+  function handleSetLocation() {
+    alert("Set location pressed");
+  }
+
+  // Toggle between view and edit modes
+  function toggleEditMode() {
+    setViewOnly(!viewOnly);
+  }
 
   return (
     <View style={styles.screenContainer}>
-      <Text style={styles.title}>HERE IS MY EVENT</Text>
-      <Text>{event.title}</Text>
-      <Text>{event.date}</Text>
-      <Text>{event.time}</Text>
-      <Text>{event.description}</Text>
-      <Text>{event.latitude}</Text>
-      <Text>{event.longitude}</Text>
-      {/* <Text>Task: {taskId}</Text>
-      <TextInput placeholder="Task" onChange={setTitle} value={title} />
-      <Text>Details</Text>
-      <TextInput placeholder="Details" onChange={setDetails} value={details} /> */}
+      {viewOnly ? (
+        // View mode
+        <View>
+          <Text style={styles.title}>{event.title}</Text>
+          <Text>{event.date}</Text>
+          <Text>{event.time}</Text>
+          <Text>{event.description}</Text>
+          <Text>{event.latitude}</Text>
+          <Text>{event.longitude}</Text>
+          <Button title="Edit" onPress={toggleEditMode} />
+        </View>
+      ) : (
+        // Edit mode
+        <View>
+          <Text style={styles.title}>Edit Event</Text>
+          <Text>Title</Text>
+          <TextInput
+            placeholder="Title"
+            value={title}
+            onChangeText={setTitle}
+          />
+          <Text>Date</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Date"
+            value={date}
+            onChangeText={setDate}
+          />
+          <Text>Time</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Time"
+            value={time}
+            onChangeText={setTime}
+          />
+          <Text>Description</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Description"
+            value={description}
+            onChangeText={setDescription}
+          />
+          <Text>Location</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Latitude"
+            value={latitude}
+            onChangeText={setLatitude}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Longitude"
+            value={longitude}
+            onChangeText={setLongitude}
+          />
+          <Button title="Set Location" onPress={handleSetLocation} />
+          <Button title="Save Changes" onPress={toggleEditMode} />
+        </View>
+      )}
     </View>
   );
 }
@@ -210,7 +297,7 @@ function MapScreen({ navigation }) {
     alert("Marker Added");
   }
 
-  function handleMarkerPress(event) {
+  function handlePressMarker(event) {
     alert("MARKER PRESSED!");
     navigation.navigate("Event", { itemObject: event });
   }
@@ -224,7 +311,7 @@ function MapScreen({ navigation }) {
             coordinate={event.coordinate}
             key={event.id} // Ensure unique key
             title={event.title}
-            onPress={() => handleMarkerPress(event)}
+            onPress={() => handlePressMarker(event)}
           />
         ))}
       </MapView>
@@ -285,5 +372,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  input: {
+    height: 40, // Adjust the height as needed
+    borderColor: "#ccc", // Light grey border color
+    borderWidth: 1, // Solid border width
+    borderRadius: 5, // Optional rounded corners
+    paddingHorizontal: 10, // Padding inside the input
+    fontSize: 16, // Adjust text size
+    backgroundColor: "#fff", // White background
   },
 });
