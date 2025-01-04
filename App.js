@@ -146,7 +146,6 @@ function EventScreen({ navigation, route }) {
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
   const event = route.params.itemObject;
-  alert(JSON.stringify(event));
 
   return (
     <View style={styles.screenContainer}>
@@ -184,8 +183,6 @@ function MapScreen({ navigation }) {
     longitudeDelta: 10, // Default zoom level
   });
 
-  alert(JSON.stringify(events));
-
   useEffect(() => {
     fetchRegions();
   }, []);
@@ -213,16 +210,21 @@ function MapScreen({ navigation }) {
     alert("Marker Added");
   }
 
+  function handleMarkerPress(event) {
+    alert("MARKER PRESSED!");
+    navigation.navigate("Event", { itemObject: event });
+  }
+
   return (
     <View style={styles.screenContainer}>
       <Text>HERE IS A MAP</Text>
-      <MapView style={styles.map} reion={region} onLongPress={addMarker}>
+      <MapView style={styles.map} reion={region}>
         {events.map((event) => (
           <Marker
             coordinate={event.coordinate}
             key={event.id} // Ensure unique key
             title={event.title}
-            onPress={() => alert("Pressed " + event.title)} // Show alert on marker press
+            onPress={() => handleMarkerPress(event)}
           />
         ))}
       </MapView>
