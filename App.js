@@ -5,12 +5,20 @@ import {
   View,
   TextInput,
   Button,
-  TouchableOpacity,
   FlatList,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MapView from "react-native-maps";
+
+// --- Import FIrebase Config -----
+import { database } from "./firebaseConfig.js";
+// --- Import Firebase Functions ----
+import { addDoc, collection } from "firebase/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
+
+// --- FIRE STORE DATABASE VAR:
+// const [chosenCollection, setChosenCollection] = useState("User");
 
 //#region Default Screen
 /*
@@ -93,11 +101,17 @@ function DatePickerScreen({ navigation }) {
 function ListScreen({ navigation }) {
   // const [date, setDate] = useState("");
   const [taskList, setTaskList] = useState([]);
-  const data = [
-    { id: 1, title: "A" },
-    { id: 2, title: "B" },
-    { id: 3, title: "C" },
-  ];
+  // --- fra useCollecion, fra firestore
+  // ------------------------------------------------------------- note: db-collection
+  const [values, loading, error] = useCollection(collection(database, "User"));
+
+  const data = values?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+
+  // const data = [
+  //   { id: 1, title: "A" },
+  //   { id: 2, title: "B" },
+  //   { id: 3, title: "C" },
+  // ];
 
   // Fetch the data:
   // useEffect(() => {
