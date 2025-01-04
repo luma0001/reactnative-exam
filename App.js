@@ -107,32 +107,12 @@ function ListScreen({ navigation }) {
 
   const data = values?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
-  // const data = [
-  //   { id: 1, title: "A" },
-  //   { id: 2, title: "B" },
-  //   { id: 3, title: "C" },
-  // ];
-
-  // Fetch the data:
-  // useEffect(() => {
-  //   const unsubscribe = firestore
-  //     .collection('items')
-  //     .onSnapshot(snapshot => {
-  //       const data = snapshot.docs.map(doc => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       }));
-  //       setItems(data);
-  //     });
-  //     return () => unsubscribe();
-  // }, []);
-
   const renderEvent = ({ item }) => (
     <View style={styles.listEvent}>
       <Text>{item.title}</Text>
       <Button
         title="View Details"
-        onPress={() => navigation.navigate("Event", { itemId: item.id })}
+        onPress={() => navigation.navigate("Event", { itemObject: item })}
       />
     </View>
   );
@@ -143,7 +123,7 @@ function ListScreen({ navigation }) {
       <FlatList
         data={data}
         renderItem={renderEvent}
-        keyExtractor={(event) => event.id}
+        keyExtractor={(item) => item.id}
       />
       <Button
         title="Go to Default"
@@ -162,28 +142,20 @@ function ListScreen({ navigation }) {
 */
 
 function EventScreen({ navigation, route }) {
-  // const { taskId } = route.params;
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
-  const event = route.params;
-  alert(event);
-
-  // Fetches the item...?
-  // useEffect(() => {
-  //   const fetchItem = async () => {
-  //     const doc = await firestore.collection("items").doc(itemId).get();
-  //     if (doc.exists) {
-  //       setItem(doc.data());
-  //     }
-  //   };
-
-  //   fetchItem();
-  // }, [itemId]);
+  const event = route.params.itemObject;
+  alert(JSON.stringify(event));
 
   return (
     <View style={styles.screenContainer}>
       <Text style={styles.title}>HERE IS MY EVENT</Text>
-      <Text>Details: {event.title}</Text>
+      <Text>{event.title}</Text>
+      <Text>{event.date}</Text>
+      <Text>{event.time}</Text>
+      <Text>{event.description}</Text>
+      <Text>{event.latitude}</Text>
+      <Text>{event.longitude}</Text>
       {/* <Text>Task: {taskId}</Text>
       <TextInput placeholder="Task" onChange={setTitle} value={title} />
       <Text>Details</Text>
