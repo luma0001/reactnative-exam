@@ -15,7 +15,13 @@ import MapView, { Marker } from "react-native-maps";
 // --- Import Firebase Config -----
 import { database } from "./firebaseConfig.js";
 // --- Import Firebase Functions ----
-import { addDoc, getDocs, collection } from "firebase/firestore";
+import {
+  addDoc,
+  getDocs,
+  deleteDoc,
+  collection,
+  doc,
+} from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 
 //#region Default Screen
@@ -158,6 +164,20 @@ function EventScreen({ navigation, route }) {
     setViewOnly(!viewOnly);
   }
 
+  function handleSaveEvent() {
+    alert("Save this document!");
+    toggleEditMode();
+  }
+
+  async function handleDeleteEvent(id) {
+    try {
+      await deleteDoc(doc(database, "User", id));
+      navigation.navigate("List");
+    } catch (error) {
+      console.error("Error deleting event: ", error);
+    }
+  }
+
   return (
     <View style={styles.screenContainer}>
       {viewOnly ? (
@@ -170,6 +190,7 @@ function EventScreen({ navigation, route }) {
           <Text>{event.latitude}</Text>
           <Text>{event.longitude}</Text>
           <Button title="Edit" onPress={toggleEditMode} />
+          <Button title="Delete" onPress={() => handleDeleteEvent(event.id)} />
         </View>
       ) : (
         // Edit mode
@@ -216,7 +237,7 @@ function EventScreen({ navigation, route }) {
             onChangeText={setLongitude}
           />
           <Button title="Set Location" onPress={handleSetLocation} />
-          <Button title="Save Changes" onPress={toggleEditMode} />
+          <Button title="Save Changes" onPress={handleSaveEvent} />
         </View>
       )}
     </View>
@@ -236,8 +257,8 @@ function MapScreen({ navigation }) {
   const [date, setDate] = useState("");
   const [events, setEvents] = useState([]);
   const [region, setRegion] = useState({
-    latitude: 0, 
-    longitude: 12, 
+    latitude: 0,
+    longitude: 12,
     latitudeDelta: 10,
     longitudeDelta: 10,
   });
@@ -337,12 +358,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
-    height: 40, 
-    borderColor: "#ccc", 
-    borderWidth: 1, 
-    borderRadius: 5, 
-    paddingHorizontal: 10, 
-    fontSize: 16, 
-    backgroundColor: "#fff", 
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    backgroundColor: "#fff",
   },
 });
