@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MapView from "react-native-maps";
@@ -83,11 +91,46 @@ function DatePickerScreen({ navigation }) {
 */
 
 function ListScreen({ navigation }) {
-  const [date, setDate] = useState("");
+  // const [date, setDate] = useState("");
+  const [taskList, setTaskList] = useState([]);
+  const data = [
+    { id: 1, title: "A" },
+    { id: 2, title: "B" },
+    { id: 3, title: "C" },
+  ];
+
+  // Fetch the data:
+  // useEffect(() => {
+  //   const unsubscribe = firestore
+  //     .collection('items')
+  //     .onSnapshot(snapshot => {
+  //       const data = snapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
+  //       setItems(data);
+  //     });
+  //     return () => unsubscribe();
+  // }, []);
+
+  const renderEvent = ({ item }) => (
+    <View style={styles.listEvent}>
+      <Text>{item.title}</Text>
+      <Button
+        title="View Details"
+        onPress={() => navigation.navigate("Event", { itemId: item.id })}
+      />
+    </View>
+  );
 
   return (
     <View style={styles.screenContainer}>
       <Text>HERE IS A LIST OF TASKS</Text>
+      <FlatList
+        data={data}
+        renderItem={renderEvent}
+        keyExtractor={(event) => event.id}
+      />
       <Button
         title="Go to Default"
         onPress={() => navigation.navigate("Default")}
@@ -97,10 +140,50 @@ function ListScreen({ navigation }) {
 }
 //#endregion
 
-//#region MOCKMAP
+//#region Tasks
 /*
   ==================================================================================
-                                  Mock Map
+                                  Event Detail View
+  ==================================================================================
+*/
+
+function EventScreen({ navigation, route }) {
+  // const { taskId } = route.params;
+  const [title, setTitle] = useState("");
+  const [details, setDetails] = useState("");
+  const event = route.params;
+  alert(event);
+
+  // Fetches the item...?
+  // useEffect(() => {
+  //   const fetchItem = async () => {
+  //     const doc = await firestore.collection("items").doc(itemId).get();
+  //     if (doc.exists) {
+  //       setItem(doc.data());
+  //     }
+  //   };
+
+  //   fetchItem();
+  // }, [itemId]);
+
+  return (
+    <View style={styles.screenContainer}>
+      <Text style={styles.title}>HERE IS MY EVENT</Text>
+      <Text>Details: {event.title}</Text>
+      {/* <Text>Task: {taskId}</Text>
+      <TextInput placeholder="Task" onChange={setTitle} value={title} />
+      <Text>Details</Text>
+      <TextInput placeholder="Details" onChange={setDetails} value={details} /> */}
+    </View>
+  );
+}
+
+//endregion
+
+//#region Map
+/*
+  ==================================================================================
+                                  Map
   ==================================================================================
 */
 
@@ -119,32 +202,6 @@ function MapScreen({ navigation }) {
   );
 }
 //#endregion
-
-//#region Tasks
-/*
-  ==================================================================================
-                                  Task View
-  ==================================================================================
-*/
-
-function EventScreen({ navigation }) {
-  const [title, setTitle] = useState("");
-  const [details, setDetails] = useState("");
-
-  return (
-    <View style={styles.screenContainer}>
-      <Text>Task</Text>
-      <TextInput placeholder="Task" onChange={setTitle} value={title} />
-      <Text>Details</Text>
-      <TextInput placeholder="Details" onChange={setDetails} value={details} />
-      <Button
-        title="Go to Default"
-        onPress={() => navigation.navigate("Default")}
-      />
-    </View>
-  );
-}
-//endregion
 
 // Stack Navigation Setup
 const Stack = createNativeStackNavigator();
@@ -184,5 +241,15 @@ const styles = StyleSheet.create({
   map: {
     height: "80%",
     width: "100%",
+  },
+  listEvent: {
+    flex: 1 / 2,
+    flexDirection: "row",
+    alignContent: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });
