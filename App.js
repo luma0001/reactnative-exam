@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,14 +7,15 @@ import {
   Button,
   FlatList,
 } from "react-native";
+// --- Import Navigation -----
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import MapView from "react-native-maps";
-
-// --- Import FIrebase Config -----
+// --- Import Maps -----
+import MapView, { Marker } from "react-native-maps";
+// --- Import Firebase Config -----
 import { database } from "./firebaseConfig.js";
 // --- Import Firebase Functions ----
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, getDocs, collection } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 
 // --- FIRE STORE DATABASE VAR:
@@ -175,11 +176,56 @@ function EventScreen({ navigation, route }) {
 
 function MapScreen({ navigation }) {
   const [date, setDate] = useState("");
+  const [events, setEvents] = useState([]);
+  const [region, setRegion] = useState({
+    latitude: 0, // Default latitude
+    longitude: 12, // Default longitude
+    latitudeDelta: 10, // Default zoom level
+    longitudeDelta: 10, // Default zoom level
+  });
+
+  alert(JSON.stringify(events));
+
+  useEffect(() => {
+    fetchRegions();
+  }, []);
+
+  // const [values, loading, error] = useCollection(collection(database, "User"));
+  // const data = values?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+
+  // WHY FETCH? - Det er der jo ikke behov for i listen, ER DER?
+  // Fetch all markers from Firestore
+  async function fetchRegions() {
+    try {
+      const eventDocs = await getDocs(collection(database, "User"));
+      const allEvents = eventDocs.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+
+      setEvents(allEvents);
+    } catch (error) {
+      console.log("Error fetching regions:", error);
+    }
+  }
+
+  function addMarker() {
+    alert("Marker Added");
+  }
 
   return (
     <View style={styles.screenContainer}>
       <Text>HERE IS A MAP</Text>
-      <MapView style={styles.map}></MapView>
+      <MapView style={styles.map} reion={region} onLongPress={addMarker}>
+        {events.map((event) => (
+          <Marker
+            coordinate={event.coordinate}
+            key={event.id} // Ensure unique key
+            title={event.title}
+            onPress={() => alert("Pressed " + event.title)} // Show alert on marker press
+          />
+        ))}
+      </MapView>
       <Button
         title="Go to Default"
         onPress={() => navigation.navigate("Default")}
