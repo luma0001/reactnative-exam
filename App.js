@@ -374,12 +374,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
-    height: 40, // Adjust the height as needed
-    borderColor: "#ccc", // Light grey border color
-    borderWidth: 1, // Solid border width
-    borderRadius: 5, // Optional rounded corners
-    paddingHorizontal: 10, // Padding inside the input
-    fontSize: 16, // Adjust text size
-    backgroundColor: "#fff", // White background
+    height: 40, 
+    borderColor: "#ccc", 
+    borderWidth: 1, 
+    borderRadius: 5, 
+    paddingHorizontal: 10, 
+    fontSize: 16, 
+    backgroundColor: "#fff", 
   },
 });
