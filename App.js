@@ -18,9 +18,6 @@ import { database } from "./firebaseConfig.js";
 import { addDoc, getDocs, collection } from "firebase/firestore";
 import { useCollection } from "react-firebase-hooks/firestore";
 
-// --- FIRE STORE DATABASE VAR:
-// const [chosenCollection, setChosenCollection] = useState("User");
-
 //#region Default Screen
 /*
   ==================================================================================
@@ -30,11 +27,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 
 function DefaultScreen({ navigation }) {
   const [date, setDate] = useState("");
-
-  // useEffect(() => {
-  //   console.log("DefaultScreen rendered");
-  //   alert("Default Screen here");
-  // }, []); // Alert only when the component is mounted
 
   return (
     <View style={styles.screenContainer}>
@@ -100,10 +92,7 @@ function DatePickerScreen({ navigation }) {
 */
 
 function ListScreen({ navigation }) {
-  // const [date, setDate] = useState("");
   const [taskList, setTaskList] = useState([]);
-  // --- fra useCollecion, fra firestore
-  // ------------------------------------------------------------- note: db-collection
   const [values, loading, error] = useCollection(collection(database, "User"));
 
   const data = values?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
@@ -120,19 +109,11 @@ function ListScreen({ navigation }) {
 
   function handleNewEventPressed() {
     alert("You wanna make a new event!");
-
-    // open the EventScreen with a <CREATE BUTTON>
-    // Instead of a <DELETE/UPDATE...>
-    // EventScreen should be TEXT until you CREATE or DELTE - Then it's text input!
-    // ... then we ddo CRUD
-    // Update LOCATION - the last thing OK!
-    // Then we can contemplate having a calender...
   }
 
   return (
     <View style={styles.screenContainer}>
       <Text>Your Day:</Text>
-      {/* <Button title="New Event" onPress={handleNewEventPressed()}></Button> */}
       <FlatList
         data={data}
         renderItem={renderEvent}
@@ -155,7 +136,7 @@ function ListScreen({ navigation }) {
 */
 
 function EventScreen({ navigation, route }) {
-  const [viewOnly, setViewOnly] = useState(true); // Default to view mode
+  const [viewOnly, setViewOnly] = useState(true);
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -165,7 +146,6 @@ function EventScreen({ navigation, route }) {
 
   const event = route.params.itemObject;
 
-  // Update form fields with event details when in view mode
   useEffect(() => {
     if (!viewOnly) {
       setTitle(event.title);
@@ -181,7 +161,6 @@ function EventScreen({ navigation, route }) {
     alert("Set location pressed");
   }
 
-  // Toggle between view and edit modes
   function toggleEditMode() {
     setViewOnly(!viewOnly);
   }
@@ -264,21 +243,16 @@ function MapScreen({ navigation }) {
   const [date, setDate] = useState("");
   const [events, setEvents] = useState([]);
   const [region, setRegion] = useState({
-    latitude: 0, // Default latitude
-    longitude: 12, // Default longitude
-    latitudeDelta: 10, // Default zoom level
-    longitudeDelta: 10, // Default zoom level
+    latitude: 0, 
+    longitude: 12, 
+    latitudeDelta: 10,
+    longitudeDelta: 10,
   });
 
   useEffect(() => {
     fetchRegions();
   }, []);
 
-  // const [values, loading, error] = useCollection(collection(database, "User"));
-  // const data = values?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-
-  // WHY FETCH? - Det er der jo ikke behov for i listen, ER DER?
-  // Fetch all markers from Firestore
   async function fetchRegions() {
     try {
       const eventDocs = await getDocs(collection(database, "User"));
@@ -309,7 +283,7 @@ function MapScreen({ navigation }) {
         {events.map((event) => (
           <Marker
             coordinate={event.coordinate}
-            key={event.id} // Ensure unique key
+            key={event.id}
             title={event.title}
             onPress={() => handlePressMarker(event)}
           />
@@ -324,10 +298,8 @@ function MapScreen({ navigation }) {
 }
 //#endregion
 
-// Stack Navigation Setup
 const Stack = createNativeStackNavigator();
 
-// App component
 export default function App() {
   const [enteredText, setEnteredText] = useState("type here");
 
@@ -338,9 +310,6 @@ export default function App() {
         <Stack.Screen name="Date" component={DatePickerScreen} />
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
-        <Stack.Screen name="Event" component={EventScreen} />
-
-        {/* You can add more screens like List, Map, etc. */}
       </Stack.Navigator>
     </NavigationContainer>
   );
