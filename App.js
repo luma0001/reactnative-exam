@@ -19,6 +19,7 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
   collection,
   doc,
 } from "firebase/firestore";
@@ -135,7 +136,11 @@ function ListScreen({ navigation }) {
 */
 
 function EventScreen({ navigation, route }) {
+  // ---- Eoggle edit ----
   const [viewOnly, setViewOnly] = useState(true);
+  // --- Event object ----
+  const [event, setEvent] = useState(route.params.itemObject);
+  // ---- Event Attribures ----
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -143,16 +148,14 @@ function EventScreen({ navigation, route }) {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
-  const event = route.params.itemObject;
-
   useEffect(() => {
     if (!viewOnly) {
       setTitle(event.title);
       setDate(event.date);
       setTime(event.time);
       setDescription(event.description);
-      setLatitude(event.latitude);
-      setLongitude(event.longitude);
+      setLatitude(event.coordinate.latitude);
+      setLongitude(event.coordinate.longitude);
     }
   }, [viewOnly, event]);
 
@@ -164,9 +167,34 @@ function EventScreen({ navigation, route }) {
     setViewOnly(!viewOnly);
   }
 
-  function handleSaveEvent() {
-    alert("Save this document!");
-    toggleEditMode();
+  async function handleSaveEvent() {
+    try {
+      const eventRef = doc(database, "User", event.id);
+      await updateDoc(eventRef, {
+        title,
+        date,
+        time,
+        description,
+        latitude,
+        longitude,
+      });
+
+      setEvent((prevEvent) => ({
+        ...prevEvent,
+        title,
+        date,
+        time,
+        description,
+        coordinate: {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+        },
+      }));
+
+      toggleEditMode();
+    } catch (error) {
+      console.log("Error while updating event: ", error);
+    }
   }
 
   async function handleDeleteEvent(id) {
@@ -174,7 +202,7 @@ function EventScreen({ navigation, route }) {
       await deleteDoc(doc(database, "User", id));
       navigation.navigate("List");
     } catch (error) {
-      console.error("Error deleting event: ", error);
+      console.error("Error when deleting event: ", error);
     }
   }
 
@@ -187,8 +215,8 @@ function EventScreen({ navigation, route }) {
           <Text>{event.date}</Text>
           <Text>{event.time}</Text>
           <Text>{event.description}</Text>
-          <Text>{event.latitude}</Text>
-          <Text>{event.longitude}</Text>
+          <Text>{event.coordinate.latitude}</Text>
+          <Text>{event.coordinate.longitude}</Text>
           <Button title="Edit" onPress={toggleEditMode} />
           <Button title="Delete" onPress={() => handleDeleteEvent(event.id)} />
         </View>
@@ -281,9 +309,9 @@ function MapScreen({ navigation }) {
     }
   }
 
-  function addMarker() {
-    alert("Marker Added");
-  }
+  // function addMarker() {
+  //   alert("Marker Added");
+  // }
 
   function handlePressMarker(event) {
     alert("MARKER PRESSED!");
