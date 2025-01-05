@@ -273,10 +273,10 @@ function EventScreen({ navigation, route }) {
 
 //endregion
 
-//#region Event View
+//#region New Event
 /*
   ==================================================================================
-                               NewEvent
+                               New Event
   ==================================================================================
 */
 
@@ -291,13 +291,16 @@ function NewEventScreen({ navigation }) {
 
   async function handleCreateEvent() {
     try {
+      const numericLatitude = parseFloat(latitude) || 0;
+      const numericLongitude = parseFloat(longitude) || 0; 
+      const coordinate = { latitude: numericLatitude, longitude: numericLongitude };
+
       await addDoc(collection(database, "User"), {
         title,
         date,
         time,
         description,
-        latitude,
-        longitude,
+        coordinate: coordinate,
       });
 
       navigation.goBack();
@@ -392,7 +395,6 @@ function MapScreen({ navigation }) {
   // }
 
   function handlePressMarker(event) {
-    alert("MARKER PRESSED!");
     navigation.navigate("Event", { itemObject: event });
   }
 
