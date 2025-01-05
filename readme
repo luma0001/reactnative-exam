@@ -1,5 +1,9 @@
+Make sure to have Expo Go on your phone or emulator
+
 Download the nessessary dependencies
+
 Conncet you your own firebase conncetion - named "firebaseConfig" in code
-Databse named "User"
+
+The applicatin uses a Database named "User"
 
 The App allows users to make a note book with a map that shows them where the event is located.
