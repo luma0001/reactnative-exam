@@ -107,13 +107,13 @@ function ListScreen({ navigation }) {
     </View>
   );
 
-  function handleNewEventPressed() {
-    alert("You wanna make a new event!");
-  }
-
   return (
     <View style={styles.screenContainer}>
       <Text>Your Day:</Text>
+      <Button
+        title="New Event"
+        onPress={() => navigation.navigate("NewEvent")}
+      />
       <FlatList
         data={data}
         renderItem={renderEvent}
@@ -128,7 +128,7 @@ function ListScreen({ navigation }) {
 }
 //#endregion
 
-//#region Tasks
+//#region Event View
 /*
   ==================================================================================
                                   Event Detail View
@@ -200,7 +200,7 @@ function EventScreen({ navigation, route }) {
   async function handleDeleteEvent(id) {
     try {
       await deleteDoc(doc(database, "User", id));
-      navigation.navigate("List");
+      navigation.goBack();
     } catch (error) {
       console.error("Error when deleting event: ", error);
     }
@@ -221,7 +221,6 @@ function EventScreen({ navigation, route }) {
           <Button title="Delete" onPress={() => handleDeleteEvent(event.id)} />
         </View>
       ) : (
-        // Edit mode
         <View>
           <Text style={styles.title}>Edit Event</Text>
           <Text>Title</Text>
@@ -273,6 +272,85 @@ function EventScreen({ navigation, route }) {
 }
 
 //endregion
+
+//#region Event View
+/*
+  ==================================================================================
+                               NewEvent
+  ==================================================================================
+*/
+
+function NewEventScreen({ navigation }) {
+  // ---- Event Attribures ----
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [description, setDescription] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+
+  async function handleCreateEvent() {
+    try {
+      await addDoc(collection(database, "User"), {
+        title,
+        date,
+        time,
+        description,
+        latitude,
+        longitude,
+      });
+
+      navigation.goBack();
+    } catch (error) {
+      console.log("Error while creating event: ", error);
+    }
+  }
+
+  return (
+    <View>
+      <Text style={styles.title}>Edit Event</Text>
+      <Text>Title</Text>
+      <TextInput placeholder="Title" value={title} onChangeText={setTitle} />
+      <Text>Date</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Date"
+        value={date}
+        onChangeText={setDate}
+      />
+      <Text>Time</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Time"
+        value={time}
+        onChangeText={setTime}
+      />
+      <Text>Description</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Description"
+        value={description}
+        onChangeText={setDescription}
+      />
+      <Text>Location</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Latitude"
+        value={latitude}
+        onChangeText={setLatitude}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Longitude"
+        value={longitude}
+        onChangeText={setLongitude}
+      />
+      <Button title="Save Event" onPress={handleCreateEvent} />
+    </View>
+  );
+}
+
+//#endregion
 
 //#region Map
 /*
@@ -340,6 +418,13 @@ function MapScreen({ navigation }) {
 }
 //#endregion
 
+//#region App
+/*
+  ==================================================================================
+                                App
+  ==================================================================================
+*/
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -353,6 +438,7 @@ export default function App() {
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Event" component={EventScreen} />
+        <Stack.Screen name="NewEvent" component={NewEventScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -395,3 +481,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 });
+
+//#endregion
