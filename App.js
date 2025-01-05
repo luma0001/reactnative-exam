@@ -241,10 +241,15 @@ function EventScreen({ navigation, route }) {
       {viewOnly ? (
         <View>
           <Text style={styles.title}>{event.title}</Text>
+          <Text>Date:</Text>
           <Text>{event.date}</Text>
+          <Text>Time:</Text>
           <Text>{event.time}</Text>
+          <Text>Description:</Text>
           <Text>{event.description}</Text>
+          <Text>Latitude:</Text>
           <Text>{event.coordinate.latitude}</Text>
+          <Text>Longitude:</Text>
           <Text>{event.coordinate.longitude}</Text>
           <Button title="Edit" onPress={toggleEditMode} />
           <Button title="Delete" onPress={() => handleDeleteEvent(event.id)} />
