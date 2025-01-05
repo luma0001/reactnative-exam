@@ -38,6 +38,13 @@ function DefaultScreen({ navigation }) {
   return (
     <View style={styles.screenContainer}>
       <Button
+        title="Go to Date"
+        onPress={() => {
+          console.log("Navigating to Date");
+          navigation.navigate("Date");
+        }}
+      />
+      <Button
         title="Go to List"
         onPress={() => {
           console.log("Navigating to List");
@@ -50,6 +57,27 @@ function DefaultScreen({ navigation }) {
           console.log("Navigating to Map");
           navigation.navigate("Map");
         }}
+      />
+    </View>
+  );
+}
+//#endregion
+
+//#region Date Picker
+/*
+  ==================================================================================
+                                Date Picker
+  ==================================================================================
+*/
+
+function DatePickerScreen({ navigation }) {
+  return (
+    <View style={styles.screenContainer}>
+      <Text>Task</Text>
+      <TextInput placeholder="Task" onChangeText={() => {}} />
+      <Button
+        title="Go to Default"
+        onPress={() => navigation.navigate("Default")}
       />
     </View>
   );
@@ -110,15 +138,27 @@ function ListScreen({ navigation }) {
 function EventScreen({ navigation, route }) {
   // ---- Eoggle edit ----
   const [viewOnly, setViewOnly] = useState(true);
-  // --- Event object ----
-  const [event, setEvent] = useState(route.params.itemObject);
-  // ---- Event Attribures ----
+  // ---- Event object ----
+  const [event, setEvent] = useState(route.params?.itemObject || {});
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [description, setDescription] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+
+  // ---- Update coordinates ----
+  useEffect(() => {
+    if (route.params?.coordinates) {
+      const { latitude, longitude } = route.params.coordinates;
+
+      // Update latitude and longitude text inputs only if coordinates are defined
+      if (latitude !== undefined && longitude !== undefined) {
+        setLatitude(latitude.toString());
+        setLongitude(longitude.toString());
+      }
+    }
+  }, [route.params?.coordinates]); // Run when coordinates are updated
 
   useEffect(() => {
     if (!viewOnly) {
@@ -199,6 +239,8 @@ function EventScreen({ navigation, route }) {
     }
   }
 
+  // --- Delete Event -----
+
   async function handleDeleteEvent(id) {
     try {
       await deleteDoc(doc(database, "User", id));
@@ -208,20 +250,22 @@ function EventScreen({ navigation, route }) {
     }
   }
 
+  // ---- Set Location by longPress -----
+
+  function handleSetLocation() {
+    alert("set location!");
+    navigation.navigate("Map", { canLongPress: true });
+  }
+
   return (
     <View style={styles.screenContainer}>
       {viewOnly ? (
         <View>
           <Text style={styles.title}>{event.title}</Text>
-          <Text>Date:</Text>
           <Text>{event.date}</Text>
-          <Text>Time:</Text>
           <Text>{event.time}</Text>
-          <Text>Description:</Text>
           <Text>{event.description}</Text>
-          <Text>Latitude:</Text>
           <Text>{event.coordinate.latitude}</Text>
-          <Text>Longitude:</Text>
           <Text>{event.coordinate.longitude}</Text>
           <Button title="Edit" onPress={toggleEditMode} />
           <Button title="Delete" onPress={() => handleDeleteEvent(event.id)} />
@@ -269,7 +313,7 @@ function EventScreen({ navigation, route }) {
             value={longitude}
             onChangeText={setLongitude}
           />
-          {/* <Button title="Set Location" onPress={handleSetLocation} /> */}
+          <Button title="Set Location" onPress={handleSetLocation} />
           <Button title="Save Changes" onPress={handleSaveEvent} />
         </View>
       )}
@@ -370,9 +414,8 @@ function NewEventScreen({ navigation }) {
                                   Map
   ==================================================================================
 */
-
-function MapScreen({ navigation }) {
-  const [date, setDate] = useState("");
+function MapScreen({ navigation, route }) {
+  const { canLongPress = false } = route.params || {};
   const [events, setEvents] = useState([]);
   const [region, setRegion] = useState({
     latitude: 0,
@@ -380,6 +423,7 @@ function MapScreen({ navigation }) {
     latitudeDelta: 10,
     longitudeDelta: 10,
   });
+  const [coordinates, setCoordinates] = useState(null);
 
   useEffect(() => {
     fetchRegions();
@@ -392,12 +436,22 @@ function MapScreen({ navigation }) {
         ...doc.data(),
         id: doc.id,
       }));
-
       setEvents(allEvents);
     } catch (error) {
       console.log("Error fetching regions:", error);
     }
   }
+
+  const handleLongPress = (event) => {
+    if (canLongPress) {
+      // Log the entire nativeEvent to see its structure
+      console.log(event.nativeEvent);
+      // Ensure the coordinates are accessible
+      const { coordinate } = event.nativeEvent;
+      setCoordinates(coordinate);
+      navigation.navigate("Event", { coordinates: coordinate });
+    }
+  };
 
   function handlePressMarker(event) {
     navigation.navigate("Event", { itemObject: event });
@@ -405,8 +459,8 @@ function MapScreen({ navigation }) {
 
   return (
     <View style={styles.screenContainer}>
-      <Text>HERE IS A MAP</Text>
-      <MapView style={styles.map} reion={region}>
+      <Text>Here are your events</Text>
+      <MapView style={styles.map} region={region} onLongPress={handleLongPress}>
         {events.map((event) => (
           <Marker
             coordinate={event.coordinate}
@@ -435,12 +489,11 @@ function MapScreen({ navigation }) {
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [enteredText, setEnteredText] = useState("type here");
-
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Default">
         <Stack.Screen name="Default" component={DefaultScreen} />
+        <Stack.Screen name="Date" component={DatePickerScreen} />
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Event" component={EventScreen} />
