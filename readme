@@ -1,0 +1,5 @@
+Download the nessessary dependencies
+Conncet you your own firebase conncetion - named "firebaseConfig" in code
+Databse named "User"
+
+The App allows users to make a note book with a map that shows them where the event is located.
