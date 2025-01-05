@@ -1,9 +1,19 @@
-Make sure to have Expo Go on your phone or emulator
+🚀 Prerequisites
+Before running the app, please ensure you have the following:
 
-Download the nessessary dependencies
+Expo Go installed on your mobile phone or emulator.
 
-Conncet you your own firebase conncetion - named "firebaseConfig" in code
+🔧 Setup
 
-The applicatin uses a Database named "User"
+1. Install Dependencies
+   Download the nessessary dependencies.
 
+2. Configure Firebase
+   Conncet you your own firebase conncetion - note that the file in this code is called firebaseConfig
+
+3. Firestore Database
+   The app uses a Firestore collection called "User" to store user data. Ensure that the collection is set up correctly in your Firebase project.
+
+📍 Features
 The App allows users to make a note book with a map that shows them where the event is located.
+Users can click the marker and edit the information linked to the event.
