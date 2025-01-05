@@ -209,7 +209,6 @@ function EventScreen({ navigation, route }) {
   return (
     <View style={styles.screenContainer}>
       {viewOnly ? (
-        // View mode
         <View>
           <Text style={styles.title}>{event.title}</Text>
           <Text>{event.date}</Text>
@@ -390,9 +389,6 @@ function MapScreen({ navigation }) {
     }
   }
 
-  // function addMarker() {
-  //   alert("Marker Added");
-  // }
 
   function handlePressMarker(event) {
     navigation.navigate("Event", { itemObject: event });
