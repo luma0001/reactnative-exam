@@ -38,13 +38,6 @@ function DefaultScreen({ navigation }) {
   return (
     <View style={styles.screenContainer}>
       <Button
-        title="Go to Date"
-        onPress={() => {
-          console.log("Navigating to Date");
-          navigation.navigate("Date");
-        }}
-      />
-      <Button
         title="Go to List"
         onPress={() => {
           console.log("Navigating to List");
@@ -57,27 +50,6 @@ function DefaultScreen({ navigation }) {
           console.log("Navigating to Map");
           navigation.navigate("Map");
         }}
-      />
-    </View>
-  );
-}
-//#endregion
-
-//#region Date Picker
-/*
-  ==================================================================================
-                                Date Picker
-  ==================================================================================
-*/
-
-function DatePickerScreen({ navigation }) {
-  return (
-    <View style={styles.screenContainer}>
-      <Text>Task</Text>
-      <TextInput placeholder="Task" onChangeText={() => {}} />
-      <Button
-        title="Go to Default"
-        onPress={() => navigation.navigate("Default")}
       />
     </View>
   );
@@ -469,7 +441,6 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Default">
         <Stack.Screen name="Default" component={DefaultScreen} />
-        <Stack.Screen name="Date" component={DatePickerScreen} />
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Event" component={EventScreen} />
