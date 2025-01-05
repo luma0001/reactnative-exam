@@ -154,13 +154,42 @@ function EventScreen({ navigation, route }) {
       setDate(event.date);
       setTime(event.time);
       setDescription(event.description);
-      setLatitude(event.coordinate.latitude);
-      setLongitude(event.coordinate.longitude);
+      if (event.coordinate) {
+        setLatitude(event.coordinate.latitude.toString()); // Ensure it's a string
+        setLongitude(event.coordinate.longitude.toString()); // Ensure it's a string
+      }
     }
   }, [viewOnly, event]);
 
-  function handleSetLocation() {
-    alert("Set location pressed");
+  async function handleSaveEvent() {
+    try {
+      const eventRef = doc(database, "User", event.id);
+      const updatedCoordinate = {
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      };
+
+      await updateDoc(eventRef, {
+        title,
+        date,
+        time,
+        description,
+        coordinate: updatedCoordinate,
+      });
+
+      setEvent((prevEvent) => ({
+        ...prevEvent,
+        title,
+        date,
+        time,
+        description,
+        coordinate: updatedCoordinate, // Update the coordinate as a whole object
+      }));
+
+      toggleEditMode();
+    } catch (error) {
+      console.log("Error while updating event: ", error);
+    }
   }
 
   function toggleEditMode() {
@@ -170,13 +199,17 @@ function EventScreen({ navigation, route }) {
   async function handleSaveEvent() {
     try {
       const eventRef = doc(database, "User", event.id);
+      const updatedCoordinate = {
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      };
+
       await updateDoc(eventRef, {
         title,
         date,
         time,
         description,
-        latitude,
-        longitude,
+        coordinate: updatedCoordinate,
       });
 
       setEvent((prevEvent) => ({
@@ -185,10 +218,7 @@ function EventScreen({ navigation, route }) {
         date,
         time,
         description,
-        coordinate: {
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        },
+        coordinate: updatedCoordinate,
       }));
 
       toggleEditMode();
@@ -262,7 +292,7 @@ function EventScreen({ navigation, route }) {
             value={longitude}
             onChangeText={setLongitude}
           />
-          <Button title="Set Location" onPress={handleSetLocation} />
+          {/* <Button title="Set Location" onPress={handleSetLocation} /> */}
           <Button title="Save Changes" onPress={handleSaveEvent} />
         </View>
       )}
@@ -291,8 +321,11 @@ function NewEventScreen({ navigation }) {
   async function handleCreateEvent() {
     try {
       const numericLatitude = parseFloat(latitude) || 0;
-      const numericLongitude = parseFloat(longitude) || 0; 
-      const coordinate = { latitude: numericLatitude, longitude: numericLongitude };
+      const numericLongitude = parseFloat(longitude) || 0;
+      const coordinate = {
+        latitude: numericLatitude,
+        longitude: numericLongitude,
+      };
 
       await addDoc(collection(database, "User"), {
         title,
@@ -388,7 +421,6 @@ function MapScreen({ navigation }) {
       console.log("Error fetching regions:", error);
     }
   }
-
 
   function handlePressMarker(event) {
     navigation.navigate("Event", { itemObject: event });
